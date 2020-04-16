@@ -6,19 +6,14 @@ import api from '../../services/api';
 // import { Container } from './styles';
 
 export default class Repository extends Component {
-  static propTypes = {
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        repository: PropTypes.string,
-      }),
-    }).isRequired,
-  };
-
-  state = {
-    repository: {},
-    issues: [],
-    loading: true,
-  };
+  constructor() {
+    super();
+    this.state = {
+      repository: {},
+      issues: [],
+      loading: true,
+    };
+  }
 
   async componentDidMount() {
     const { match } = this.props;
@@ -47,3 +42,11 @@ export default class Repository extends Component {
     return <h1>Repository {decodeURIComponent(match.params.repository)}</h1>;
   }
 }
+
+Repository.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      repository: PropTypes.string,
+    }),
+  }).isRequired,
+};
