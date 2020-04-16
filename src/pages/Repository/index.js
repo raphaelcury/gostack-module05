@@ -5,7 +5,7 @@ import api from '../../services/api';
 
 // import { Container } from './styles';
 
-export default class Repository extends Component {
+class Repository extends Component {
   constructor() {
     super();
     this.state = {
@@ -50,3 +50,5 @@ Repository.propTypes = {
     }),
   }).isRequired,
 };
+
+export default Repository;
