@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, Filter, IssueList } from './styles';
 
 class Repository extends Component {
   constructor() {
@@ -13,6 +13,7 @@ class Repository extends Component {
     this.state = {
       repository: {},
       issues: [],
+      issuesState: 'open',
       loading: true,
     };
   }
@@ -38,8 +39,30 @@ class Repository extends Component {
     });
   }
 
+  handleChange = async (e) => {
+    const { repository } = this.state;
+    const newState = e.target.value;
+
+    this.setState({
+      loading: true,
+    });
+
+    const issues = await api.get(`/repos/${repository.full_name}/issues`, {
+      params: {
+        state: newState,
+        per_page: 5,
+      },
+    });
+
+    this.setState({
+      issues: issues.data,
+      issuesState: newState,
+      loading: false,
+    });
+  };
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, issuesState, loading } = this.state;
     if (loading) {
       return <Loading>Carregando...</Loading>;
     }
@@ -51,6 +74,14 @@ class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
+        <Filter>
+          <p>Issues state: </p>
+          <select onChange={this.handleChange} value={issuesState}>
+            <option value="open">Open</option>
+            <option value="closed">Closed</option>
+            <option value="all">All</option>
+          </select>
+        </Filter>
         <IssueList>
           {issues.map((issue) => (
             <li key={String(issue.id)}>

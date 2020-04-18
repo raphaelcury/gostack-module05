@@ -42,6 +42,23 @@ export const Owner = styled.header`
   }
 `;
 
+export const Filter = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #eee;
+
+  p {
+    font-size: 14px;
+    margin-right: 10px;
+  }
+
+  select {
+    font-size: 12px;
+  }
+`;
+
 export const IssueList = styled.ul`
   list-style: none;
   margin-top: 30px;
