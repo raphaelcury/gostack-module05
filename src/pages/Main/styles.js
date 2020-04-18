@@ -5,16 +5,18 @@ export const Form = styled.form`
   flex-direction: row;
 
   margin-top: 30px;
+`;
 
-  input {
-    flex: 1;
+export const Input = styled.input`
+  flex: 1;
 
-    padding: 10px 15px;
-    border-radius: 4px;
-    border: 1px solid #eee;
+  padding: 10px 15px;
+  border: ${(props) => (props.notFound ? '1px solid #f00' : '1px solid #eee')};
+  border-radius: 4px;
 
-    font-size: 16px;
-  }
+  font-size: 16px;
+  font-weight: ${(props) => (props.notFound ? 'bold' : 'normal')};
+  color: ${(props) => (props.notFound ? '#f00' : '#000')};
 `;
 
 const rotate = keyframes`

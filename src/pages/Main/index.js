@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Form, SubmitButton, List } from './styles';
+import { Form, Input, SubmitButton, List } from './styles';
 
 export default class Main extends Component {
   constructor(props) {
@@ -14,6 +14,7 @@ export default class Main extends Component {
       newRepo: '',
       repositories: [],
       loading: false,
+      notFound: false,
     };
   }
 
@@ -32,30 +33,40 @@ export default class Main extends Component {
   }
 
   handleSubmit = async (e) => {
-    e.preventDefault();
-    this.setState({ loading: true });
+    try {
+      e.preventDefault();
+      this.setState({ loading: true });
 
-    const { newRepo, repositories } = this.state;
+      const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`/repos/${newRepo}`);
+      const response = await api.get(`/repos/${newRepo}`);
 
-    const data = {
-      name: response.data.full_name,
-    };
+      const data = {
+        name: response.data.full_name,
+      };
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+        loading: false,
+      });
+    } catch (error) {
+      this.setState({
+        loading: false,
+        notFound: true,
+      });
+    }
   };
 
   handleChange = (e) => {
-    this.setState({ newRepo: e.target.value });
+    this.setState({
+      newRepo: e.target.value,
+      notFound: false,
+    });
   };
 
   render() {
-    const { repositories, newRepo, loading } = this.state;
+    const { repositories, newRepo, loading, notFound } = this.state;
     return (
       <Container>
         <h1>
@@ -63,11 +74,12 @@ export default class Main extends Component {
           Repositórios
         </h1>
         <Form onSubmit={this.handleSubmit}>
-          <input
+          <Input
             type="text"
             placeholder="Nome do repositório"
             value={newRepo}
             onChange={this.handleChange}
+            notFound={notFound}
           />
           <SubmitButton loading={loading}>
             {loading ? <FaSpinner /> : <FaPlus color="#fff" size={14} />}
