@@ -120,3 +120,33 @@ export const IssueList = styled.ul`
     }
   }
 `;
+
+export const PageNavigation = styled.nav`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #eee;
+
+  h1 {
+    font-size: 16px;
+    margin: 0 5px;
+  }
+`;
+
+export const NavButton = styled.button`
+  padding: 10px;
+  margin: 0 10px;
+  background: #7159c1;
+  border: 0;
+  border-radius: 4px;
+
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+
+  &[disabled] {
+    opacity: 0.6;
+  }
+`;

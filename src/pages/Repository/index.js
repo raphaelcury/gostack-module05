@@ -5,7 +5,14 @@ import PropTypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, Filter, IssueList } from './styles';
+import {
+  Loading,
+  Owner,
+  Filter,
+  IssueList,
+  PageNavigation,
+  NavButton,
+} from './styles';
 
 class Repository extends Component {
   constructor() {
@@ -14,20 +21,23 @@ class Repository extends Component {
       repository: {},
       issues: [],
       issuesState: 'open',
+      issuesPage: 1,
       loading: true,
     };
   }
 
   async componentDidMount() {
     const { match } = this.props;
+    const { issuesState, issuesPage } = this.state;
+
     const repoName = decodeURIComponent(match.params.repository);
 
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
-          per_page: 5,
+          state: issuesState,
+          page: issuesPage,
         },
       }),
     ]);
@@ -50,19 +60,40 @@ class Repository extends Component {
     const issues = await api.get(`/repos/${repository.full_name}/issues`, {
       params: {
         state: newState,
-        per_page: 5,
       },
     });
 
     this.setState({
       issues: issues.data,
       issuesState: newState,
+      issuesPage: 1,
+      loading: false,
+    });
+  };
+
+  loadPage = async (newPage) => {
+    const { repository, issuesState } = this.state;
+
+    this.setState({
+      loading: true,
+    });
+
+    const issues = await api.get(`/repos/${repository.full_name}/issues`, {
+      params: {
+        state: issuesState,
+        page: newPage,
+      },
+    });
+
+    this.setState({
+      issues: issues.data,
+      issuesPage: newPage,
       loading: false,
     });
   };
 
   render() {
-    const { repository, issues, issuesState, loading } = this.state;
+    const { repository, issues, issuesState, issuesPage, loading } = this.state;
     if (loading) {
       return <Loading>Carregando...</Loading>;
     }
@@ -98,6 +129,18 @@ class Repository extends Component {
             </li>
           ))}
         </IssueList>
+        <PageNavigation>
+          <NavButton
+            disabled={issuesPage === 1}
+            onClick={() => this.loadPage(issuesPage - 1)}
+          >
+            Anterior
+          </NavButton>
+          <h1>{issuesPage}</h1>
+          <NavButton onClick={() => this.loadPage(issuesPage + 1)}>
+            Próxima
+          </NavButton>
+        </PageNavigation>
       </Container>
     );
   }
