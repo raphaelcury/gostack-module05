@@ -49,9 +49,8 @@ class Repository extends Component {
     });
   }
 
-  handleChange = async (e) => {
+  loadPage = async (state, page) => {
     const { repository } = this.state;
-    const newState = e.target.value;
 
     this.setState({
       loading: true,
@@ -59,37 +58,23 @@ class Repository extends Component {
 
     const issues = await api.get(`/repos/${repository.full_name}/issues`, {
       params: {
-        state: newState,
+        state,
+        page,
       },
     });
 
     this.setState({
       issues: issues.data,
-      issuesState: newState,
-      issuesPage: 1,
+      issuesState: state,
+      issuesPage: page,
       loading: false,
     });
   };
 
-  loadPage = async (newPage) => {
-    const { repository, issuesState } = this.state;
+  handleChange = async (e) => {
+    const newState = e.target.value;
 
-    this.setState({
-      loading: true,
-    });
-
-    const issues = await api.get(`/repos/${repository.full_name}/issues`, {
-      params: {
-        state: issuesState,
-        page: newPage,
-      },
-    });
-
-    this.setState({
-      issues: issues.data,
-      issuesPage: newPage,
-      loading: false,
-    });
+    this.loadPage(newState, 1);
   };
 
   render() {
@@ -132,12 +117,12 @@ class Repository extends Component {
         <PageNavigation>
           <NavButton
             disabled={issuesPage === 1}
-            onClick={() => this.loadPage(issuesPage - 1)}
+            onClick={() => this.loadPage(issuesState, issuesPage - 1)}
           >
             Anterior
           </NavButton>
           <h1>{issuesPage}</h1>
-          <NavButton onClick={() => this.loadPage(issuesPage + 1)}>
+          <NavButton onClick={() => this.loadPage(issuesState, issuesPage + 1)}>
             Próxima
           </NavButton>
         </PageNavigation>
